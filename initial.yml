@@ -1,0 +1,30 @@
+# - name: giving sudo privilege
+#   hosts: k8s
+#   tasks:
+#     - name: user dawadi password less
+#       lineinfile:
+#         dest: /etc/sudoers
+#         line: ' dawadi ALL=(ALL) NOPASSWD: ALL'
+#         validate: 'visudo -cf %s' 
+
+#     - name: set up authorized keys for dawadi user
+#       authorized_key: user=dawadi key= " {{ item }}"
+#       with_file:
+#         - ~/.ssh/id_rsa.pub 
+
+- name: remote shell execution
+  hosts: load
+  tasks:
+    - name: script execution
+      shell: /home/Dawadi/Desktop/a.sh >> abc.txt
+      args:
+        #chdir: /home/Dawadi/Desktop
+        creates: abc.txt
+        executable: /bin/bash
+      register: find_out
+    
+    - name: debug
+      debug:
+        var: find_out
+        
+

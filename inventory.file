@@ -1,0 +1,13 @@
+[k8s]
+ltkubnetes ansible_host=10.42.176.31 ansible_user=root ansible_connection=ssh ansible_ssh_pass=ubuntu
+[deb9]
+deb9test ansible_host=10.42.176.180 ansible_user=root ansible_connection=ssh ansible_ssh_pass=liNux
+[tgb]
+TGBSquid ansible_host=10.42.176.179 ansible_user=root ansible_connection=ssh ansible_ssh_pass=liNux
+[load]
+loadbalancer ansible_host=10.42.176.86 ansible_user=root ansible_connection=ssh ansible_ssh_pass=liNux
+[master] 
+masternode   ansible_host=10.42.176.80 ansible_user=root  ansible_connection=ssh ansible_ssh_pass=liNux
+[worker_node:children]
+deb9
+tgb

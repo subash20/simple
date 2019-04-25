@@ -1,0 +1,43 @@
+### installation of kubdeadm ############
+- name: Kubeadm installation 
+  hosts: tgb
+  tasks:
+    - name: update the package
+      apt:
+        update_cache: yes
+    
+    - name: Install the package apt-transport-https curl
+      apt: name={{ item }} state=present
+      with_items:
+        - apt-transport-https
+        - curl
+
+    - name: adding kubernetes apt key                    #  to authenticate package. 
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+      
+    - name: adding kubernetes repositories
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes.list'
+    
+    - name: Again update the package
+      apt:
+        update_cache: yes
+
+    - name: Install package kubelet kubeadm kubectl
+      apt: name={{ item }} state=present
+      with_items:
+        - kubelet 
+        - kubeadm 
+        - kubectl
+    
+    - name:  restart of kubelet "systemctl daemon-reload"
+      service: name=daemon-reload
+    
+    - name: kublet restart systemctl restart kubelet
+      service: name=kubelet state=restarted
+    
+
