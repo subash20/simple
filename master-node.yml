@@ -1,0 +1,52 @@
+### Installation of master node ####
+#### Prerequisities 2 CPUS 2GB RAM swap disabled #######
+- name: Kubernetes Master node installation
+  hosts: load
+  tasks: 
+    - name: update 
+      apt:
+        update_cache: yes
+    
+    #- name: upgrade
+    #  apt:
+    #    upgrade: yes
+
+    - name: kubeadm initialization 
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.42.176.86 >> clusterinfo.txt
+      #shell: kubeadm init --pod-network-cidr=10.244.0.0/16  >> clusterinfo.txt
+      register: output
+      args:
+        chdir: /root/token
+        creates: clusterinfo.txt
+
+    
+    - name: output
+      debug:
+        var: output
+    
+    - name: creating a .kube directory
+      # become: yes
+      # become_user: dawadi
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+    
+    - name: copy admin.conf to .kube/config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes                     # look in remote/target machine for src file if yes
+   
+    # - name: changing ownership of $HOME/.kube/config
+    #   file:
+    #     path: $HOME/.kube/config
+    #     owner: $(id -u)
+    #     group: $(id -g)
+    #    recursive: True
+
+    #- name: changing ownership 
+    #  command: chown $(id -u):$(id -g) $HOME/.kube/config
+    
+    - name: Install a pod network flannel
+      command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml

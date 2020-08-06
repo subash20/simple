@@ -1,0 +1,36 @@
+# - 
+#   name: Worker node connection
+#   hosts: load
+#   tasks:
+#     - name: at first token create
+#       shell: kubeadm token list
+#       register: output
+
+#     - name: Output of toke list
+#       debug:
+#         var: output.stdout_lines[0]
+
+#     # - name: show 
+
+- hosts: load
+  #become: yes
+  gather_facts: false      #skip facts of remote node to be collected
+  tasks:
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: output
+
+    - name: set join command 
+      set_fact:                                            # varaible defined 
+        join: "{{ output.stdout_lines[0] }}"
+
+
+- hosts: worker_node
+  #become: yes
+  tasks:
+    - name: join cluster                        
+      #shell: "{{ hostvars['loadbalancer'].join_command }} >> node_joined.txt"
+      shell: "{{ hostvars['loadbalancer'].join }} >>node_join.txt" 
+      args:
+        chdir: $HOME
+        creates: node_join.txt
