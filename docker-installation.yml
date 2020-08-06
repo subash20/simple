@@ -1,0 +1,48 @@
+- name: Docker and Kubernetes installation
+  hosts: tgb
+  tasks:
+    - name: update the package
+      #become: yes
+      #become_user: dawadi
+      apt:
+        update_cache: yes                #  apt-get update
+      #become: yes
+
+    #- name: upgrade the package
+     # apt:
+     #   upgrade: yes
+    
+
+        
+    - name: install packages
+      #become: yes 
+      #become_user: dawadi
+      apt: name= {{ item }} state=installed
+      with_items:
+        - apt-transport-https 
+        - ca-certificates 
+        - curl 
+        - gnupg2 
+        - software-properties-common         
+    
+    - name: Adding apt-key signing key 
+      #become: yes
+      apt_key:                                            # add apt signing key whichever key is at url
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+        #validate_certs: no
+
+    ######### adding repository #############
+    - name: adding repository 
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+        state: present
+
+    - name: update
+      apt:
+        update_cache: true
+
+    - name: Install docker version 
+      apt: 
+        name: docker-ce=18.06.2~ce~3-0~debian   
+        
